@@ -1,0 +1,23 @@
+{
+  "name": "mini-typescript",
+  "version": "1.0.0",
+  "description": "typescript 작은 프로젝트를 해보며 공부 해보자",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pikpokjeon/mini-typescript.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pikpokjeon/mini-typescript/issues"
+  },
+  "homepage": "https://github.com/pikpokjeon/mini-typescript#readme",
+  "devDependencies": {
+    "ts-node": "^10.0.0"
+  }
+}
