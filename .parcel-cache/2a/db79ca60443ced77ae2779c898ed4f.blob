@@ -1,0 +1,20 @@
+main{
+    border: 1px solid;
+}
+h1{
+
+}
+h2{
+    
+}
+section{
+
+}
+article{
+
+display: inline-flex;
+    width: 50vw;
+}
+article div{
+
+}

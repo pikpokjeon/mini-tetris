@@ -1,0 +1,24 @@
+main{
+    border: 1px solid;
+}
+h1{
+
+}
+h2{
+    
+}
+section{
+    display: flex;
+    flex-wrap: wrap;
+}
+article{
+
+    display: inline-flex;
+    width: 45vw;
+    flex-wrap: wrap;
+}
+article div{
+    border: 1px solid;
+    width: 100vw;
+    height: 80vh;
+}

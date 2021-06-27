@@ -4,7 +4,8 @@
   "description": "typescript 작은 프로젝트를 해보며 공부 해보자",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "parcel": "parcel index.html",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -18,6 +19,13 @@
   },
   "homepage": "https://github.com/pikpokjeon/mini-typescript#readme",
   "devDependencies": {
-    "ts-node": "^10.0.0"
-  }
+    "awesome-typescript-loader": "^5.2.1",
+    "parcel": "^2.0.0-beta.2",
+    "prettier": "^2.3.2",
+    "ts-jest": "^24.1.0",
+    "ts-node": "^10.0.0",
+    "ts-node-dev": "^1.1.6",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {}
 }
