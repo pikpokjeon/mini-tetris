@@ -31,8 +31,15 @@ const action = (...ons:Array<any>) => (bool:boolean) => ons.reduce((_, fn) => fn
 
 const onTrue =  (fn :any) => (bool:boolean)  => bool ? fn() : Pass
 
-const onFalse =  (fn :any) => (bool:boolean)  => !bool ? fn() : Pass
-
+const onFalse = (fn: any) => (bool: boolean) => !bool ? fn() : Pass
+    
+    
+`// 타입 시그니쳐 정의
+function double(str: string): string;
+function double(num: number): number;
+function double(arr: boolean[]): boolean[];`
+    
+    `nyScript는 쓰지말자.`
 
     ```
     자료형
