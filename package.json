@@ -2,7 +2,7 @@
   "name": "mini-typescript",
   "version": "1.0.0",
   "description": "typescript 작은 프로젝트를 해보며 공부 해보자",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "parcel": "parcel index.html",
     "test": "jest"

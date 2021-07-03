@@ -23,3 +23,13 @@ article div{
     width: 100vw;
     height: 80vh;
 }
+#block{
+    display: flex;
+    flex-wrap: wrap;
+
+}
+span{
+    width: 80vw;
+    letter-spacing: 1.5vw;
+
+}
