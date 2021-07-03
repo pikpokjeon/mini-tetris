@@ -25,7 +25,6 @@ const genElement = (type, attr, animate) =>
     }
 
     return type
-
 }
 
 
@@ -38,7 +37,6 @@ const renders = () =>
         BLOCK: 35,
     }
     const d = Array(46).fill(35).map((e, i) => e * i)
-    console.log(d)
     const size = genSize(385, d)
     const svg = genElement('svg', { height: [SIZE.H], width: [SIZE.W], fill: 'black', style: 'overflow:visible' })
     const group = genElement('g', { height: [SIZE.H], width: [SIZE.W], fill: 'black', style: 'overflow:visible' })
