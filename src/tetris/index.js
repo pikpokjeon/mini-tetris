@@ -144,29 +144,38 @@ const renders = () =>
             5: [[0, 0]]
         })
 
-    const altercolor = async (el, i) => new Promise((res) =>
+    const altercolor = async (el, i, v) => new Promise((res) => setTimeout(() =>
     {
-        return setTimeout(() =>
-        {
-            el.setAttribute('fill', 'red')
-            res(el)
+        el.setAttribute('fill', 'red')
+        return res({ v, i })
 
-        }, (1000000) / (100 * ((35 / (35 - i)))))
+    }, (1000000) / (100 * ((35 / (35 - i)))))
+    )
+
+    const resetColor = (n) => ({ v, i }) => new Promise((res) =>
+    {
+        const newEl = document.getElementById(`${i + 1 > 35 ? 35 : i + 1}-${v}`)
+        newEl.setAttribute('fill', 'grey')
     })
 
-    const drop = async (el, i) => await altercolor(el, i)
-
-    const go = (i) => 
+    const bridge = (n) => (param) => 
     {
-        let currentPosition = [i, 6]
-        const el = document.getElementById(`${i}-${currentPosition[1]}`)
-
-        if (i === 1) return
-        drop(el, i)
-        return go(i - 1)
+        console.log(param)
+        resetColor(n)(param)
     }
 
-    go(35)
+    const drop = (el, i, v) => new Promise((res) => res(altercolor(el, i, v)))
+
+    const go = (i, v) => 
+    {
+        const el = document.getElementById(`${i}-${v}`)
+
+        if (i === 1) return
+        drop(el, i, v).then(bridge(1))
+        return go(i - 1, v)
+    }
+
+    go(35, 6)
 
 }
 
