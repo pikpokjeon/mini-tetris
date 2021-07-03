@@ -1,8 +1,8 @@
 
 const genSize = (w = 350, d) =>
 {
-    const [height, margin] = [250, 35]
-    const unitX = 750 / 10
+    const [height, margin] = [0, 35]
+    const unitX = 750 / 11
     const gap = unitX / d.length
     const [maxData, minData] = [Math.max(...Array.from(d)), (Math.min(...Array.from(d)))]
     const MAX = Math.max(maxData, Math.abs(minData))
@@ -27,7 +27,7 @@ const genElement = (type, attr, animate) =>
     return type
 }
 
-const store = (initData) =>
+const Store = (initData) =>
 {
     let innnerState = Object.assign({}, initData)
 
@@ -40,6 +40,8 @@ const store = (initData) =>
     }
     const Use = topic => Object.assign({}, innnerState[topic])
 
+    console.log(innnerState)
+
     return { Publish, Use }
 }
 
@@ -50,7 +52,7 @@ const initData = {
             edge: { // x, y
                 left: [],
                 right: [],
-                bottom: [], y
+                bottom: [],
             },
             gap: {
                 left: {
@@ -99,6 +101,8 @@ const initData = {
 
 const renders = () =>
 {
+    const store = Store({ ...initData })
+    console.log(store)
     const root = document.getElementById('tetris')
     const SIZE = {
         H: 1225,
@@ -127,10 +131,42 @@ const renders = () =>
 
     }
     group.appendChild(g)
-
     svg.appendChild(group)
     root.appendChild(svg)
 
+
+    const blocks = type => (
+        {
+            1: [[0, 0], [0, -1], [0, 1], [1, 0]],
+            2: [[0, 0]],
+            3: [[0, 0]],
+            4: [[0, 0]],
+            5: [[0, 0]]
+        })
+
+    const altercolor = async (el, i) => new Promise((res) =>
+    {
+        return setTimeout(() =>
+        {
+            el.setAttribute('fill', 'red')
+            res(el)
+
+        }, (1000000) / (100 * ((i / (35 - i)))))
+    })
+
+    const drop = async (el, i) => await altercolor(el, i)
+
+    const go = (i) => 
+    {
+        let currentPosition = [i, 6]
+        const el = document.getElementById(`${i}-${currentPosition[1]}`)
+
+        if (i === 1) return
+        drop(el, i)
+        return go(i - 1)
+    }
+
+    go(35)
 
 }
 
