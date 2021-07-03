@@ -148,7 +148,6 @@ const renders = () =>
     {
         el.setAttribute('fill', 'red')
         return res({ v, i })
-
     }, (1000000) / (100 * ((35 / (35 - i)))))
     )
 
@@ -158,11 +157,10 @@ const renders = () =>
         newEl.setAttribute('fill', 'grey')
     })
 
-    const bridge = (n) => (param) => 
-    {
-        console.log(param)
-        resetColor(n)(param)
-    }
+    // const stop = ()
+
+    const bridge = (n) => (param) => resetColor(n)(param)
+
 
     const drop = (el, i, v) => new Promise((res) => res(altercolor(el, i, v)))
 
@@ -170,8 +168,9 @@ const renders = () =>
     {
         const el = document.getElementById(`${i}-${v}`)
 
-        if (i === 1) return
-        drop(el, i, v).then(bridge(1))
+        drop(el, i, v).then(bridge(i === 1 ? 0 : 1))
+        if (i === 0) return
+
         return go(i - 1, v)
     }
 
