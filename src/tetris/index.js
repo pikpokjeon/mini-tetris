@@ -151,7 +151,7 @@ const renders = () =>
             el.setAttribute('fill', 'red')
             res(el)
 
-        }, (1000000) / (100 * ((i / (35 - i)))))
+        }, (1000000) / (100 * ((35 / (35 - i)))))
     })
 
     const drop = async (el, i) => await altercolor(el, i)
