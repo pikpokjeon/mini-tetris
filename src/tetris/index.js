@@ -134,15 +134,14 @@ const renders = () =>
     svg.appendChild(group)
     root.appendChild(svg)
 
-
-    const blocks = type => (
-        {
-            1: [[0, 0], [0, -1], [0, 1], [1, 0]],
-            2: [[0, 0]],
-            3: [[0, 0]],
-            4: [[0, 0]],
-            5: [[0, 0]]
-        })
+    const blocks =
+    {
+        1: [[0, 0], [0, -1], [0, 1], [1, 0]],  //이거 떨어져서 바닥에 앉게 했는데 코드 저장을 안했어여
+        // 2: [[0, 0]],
+        // 3: [[0, 0]],
+        // 4: [[0, 0]],
+        // 5: [[0, 0]]
+    }
 
     const altercolor = async (el, i, v) => new Promise((res) => setTimeout(() =>
     {
@@ -154,10 +153,11 @@ const renders = () =>
     const resetColor = (n) => ({ v, i }) => new Promise((res) =>
     {
         const newEl = document.getElementById(`${i + 1 > 35 ? 35 : i + 1}-${v}`)
-        newEl.setAttribute('fill', 'grey')
+        newEl.setAttribute('fill', 'grey')//아
+
+
     })
 
-    // const stop = ()
 
     const bridge = (n) => (param) => resetColor(n)(param)
 
@@ -167,14 +167,14 @@ const renders = () =>
     const go = (i, v) => 
     {
         const el = document.getElementById(`${i}-${v}`)
+        if (i === 1) return
 
-        drop(el, i, v).then(bridge(i === 1 ? 0 : 1))
-        if (i === 0) return
+        drop(el, i, v).then(bridge(i === 1 ? 0 : 1)) //블럭위 y개수
 
         return go(i - 1, v)
     }
 
-    go(35, 6)
+    blocks[1].forEach(([y, x]) => go(35 + y, 6 + x))
 
 }
 
