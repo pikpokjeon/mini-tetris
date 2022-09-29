@@ -20,12 +20,14 @@
   "homepage": "https://github.com/pikpokjeon/mini-typescript#readme",
   "devDependencies": {
     "awesome-typescript-loader": "^5.2.1",
-    "parcel": "^2.0.0-beta.2",
+    "parcel": "^2.0.0-rc.0",
     "prettier": "^2.3.2",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^27.0.5",
     "ts-node": "^10.0.0",
-    "ts-node-dev": "^1.1.6",
+    "ts-node-dev": "^1.1.8",
     "typescript": "^3.4.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "popo-dom": "^0.1.0"
+  }
 }
