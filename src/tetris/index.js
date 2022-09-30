@@ -1,5 +1,14 @@
+import { Popo } from "popo-dom"
+import {tetronomi, initData} from "./initData.js"
 
-const genSize = (w = 350, d) =>
+const SVG = Popo.element( 'svg' )
+
+const svgRoot = SVG( 'svg' )
+const rect = SVG( 'rect' )
+const group = SVG('g')
+
+
+const genSize = ( w = 350, d ) =>
 {
     const [height, margin] = [0, 35]
     const unitX = 750 / 11
@@ -14,167 +23,223 @@ const genSize = (w = 350, d) =>
         idx: x => Math.floor((x - (w / d.length)) / (unitX))
     }
 }
-const genElement = (type, attr, animate) =>
-{
 
-    type = document.createElementNS('http://www.w3.org/2000/svg', type)
-
-    for (const [t, v] of Object.entries(attr))
-    {
-        type.setAttributeNS(null, t, v)
-    }
-
-    return type
-}
-
-const Store = (initData) =>
-{
+const Store = (initData,initSubs) => {
     let innnerState = Object.assign({}, initData)
+    let innerSubs = {}
+    if(initSubs) innerSubs = initSubs
 
-    const Publish = (topic, obj) =>
-    {
-        for (const [k, v] of Object.entries(obj))
-        {
+    const Publish = (topic, obj) => {
+        for (const [k, v] of Object.entries(obj)) {
             Reflect.set(innnerState[topic], k, v)
         }
+        Ack(topic)
     }
     const Use = topic => Object.assign({}, innnerState[topic])
 
-    console.log(innnerState)
-
-    return { Publish, Use }
-}
-
-const initData = {
-    'currentBlock': {
-        position: {
-            center: [],
-            edge: { // x, y
-                left: [],
-                right: [],
-                bottom: [],
-            },
-            gap: {
-                left: {
-                    left: [],
-                    bottom: [],
-                },
-                right: {
-                    right: [],
-                    bottom: []
-                },
-                center: {
-                    bottom: []
-                },
-            },
-        },
-        status: {
-            type: -1,
-            spin: -1,
-            parts: [], //id
-            index: [],
-            color: -1,
-        }
-    },
-    'play': {
-        status: {
-            level: -1,
-            isDropped: false,
-            readyDrop: true,
-            isSpin: {
-                spinToMove: {
-                    direction: -1.
-                }
-            },
-            round: -1,
-            hit: -1,
-            line: {
-                stacked: -1,
-                toRemove: -1,
-                left: -1,
-                toGetStacked: -1,
-            },
-        }
+    const Subscribe = ( topic, sub ) =>
+    {
+        if ( !innerSubs[topic] ) innerSubs[topic] = []
+        innerSubs[topic].push( sub )
+        Ack(topic)
     }
-}
 
+    const Ack = topic => innerSubs[topic].forEach(sub => sub({state:innnerState[topic], store:Store(innnerState,innerSubs)}))
+    console.log(innnerState,innerSubs)
+
+    return { Publish, Use , Subscribe}
+}
 
 const renders = () =>
 {
-    const store = Store({ ...initData })
-    console.log(store)
+    
+    const logging = ( {state, store} ) =>
+    {
+        console.log( state,store )
+    }
+
+    const store = Store( {...initData} )
+    store.Subscribe('currentBlock',logging)
     const root = document.getElementById('tetris')
     const SIZE = {
-        H: 1225,
+        H: 900,
         W: 385,
         BLOCK: 35,
     }
     const current = [35, 6]
     const d = Array(46).fill(35).map((e, i) => e * i)
-    const svg = genElement('svg', { height: [SIZE.H], width: [SIZE.W], fill: 'black', style: 'overflow:visible' })
-    const group = genElement('g', { height: [SIZE.H], width: [SIZE.W], fill: 'black', style: 'overflow:visible' })
     const size = genSize(385, d)
 
     // const background = () 
 
-    let rect
-    const g = genElement('g', { height: [SIZE.H], width: [SIZE.W], fill: 'black', style: 'overflow:visible' })
+    const rectGroup = group()
 
-    for (let k = 35; k > -1; k--)
-    {
-        for (let i = 0; i <= 11; i++)
-        {
-
-            rect = genElement('rect', { id: `${k}-${i}`, height: [SIZE.BLOCK], width: [SIZE.BLOCK], fill: 'grey', x: size.x(i), y: size.y(d[k]) })
-            g.appendChild(rect)
+    for (let k = 35; k > -1; k--) {
+        for (let i = 0; i <= 11; i++) {
+            rectGroup.appendChild(rect( { id: `${k}-${i}`, height: [SIZE.BLOCK], width: [SIZE.BLOCK], fill: 'grey', x: size.x(i), y: size.y(d[k]) }) )
         }
 
     }
-    group.appendChild(g)
-    svg.appendChild(group)
-    root.appendChild(svg)
+    // group.appendChild(g)
+    // svg.appendChild(group)
+    const svgTree = svgRoot({ height: [SIZE.H], width: [SIZE.W], style: 'overflow:visible' },[group([rectGroup])])
+    root.appendChild(svgTree)
 
-    const blocks =
-    {
-        1: [[0, 0], [0, -1], [0, 1], [1, 0]],  //이거 떨어져서 바닥에 앉게 했는데 코드 저장을 안했어여
-        // 2: [[0, 0]],
-        // 3: [[0, 0]],
-        // 4: [[0, 0]],
-        // 5: [[0, 0]]
+    addEventListener('keydown', (e) => {
+        switch (e.key) {
+            case 'ArrowUp':
+                rotate(store)
+                setBlockToDrop({ store })
+                console.log('up')
+                break
+            case 'ArrowLeft':
+                console.log('left')
+                moveToSide(store, -1)
+                render(store)
+                break
+
+            case 'ArrowRight':
+                console.log('right')
+                moveToSide(store, 1)
+                render(store)
+
+                break
+
+            case 'ArrowDown':
+                console.log('down')
+                break
+
+        }
+    })
+
+// TODO : 로직 변경 해야함 28.9.2022
+
+    const rotate = (store) => {
+        const { block } = store.Use('currentBlock')
+        const cur = tetronomi[block]
+        const newP = []
+        if (cur) {
+            cur.forEach(([y, x]) => {
+                const [nY, nX] = [x * -1, y]
+                newP.push([nY, nX])
+            })
+        }
+        // tetronomi[block] = newP
+        store.Publish('currentBlock', { shape: newP })
+        console.log(shape)
+        return newP
     }
 
-    const altercolor = async (el, i, v) => new Promise((res) => setTimeout(() =>
-    {
-        el.setAttribute('fill', 'red')
-        return res({ v, i })
-    }, (1000000) / (100 * ((35 / (35 - i)))))
-    )
+    const moveToSide = (store, i) => {
+        const { block, h } = store.Use('currentBlock')
+        const cur = tetronomi[block]
+        const newP = []
+        if (cur) {
+            cur.forEach(([y, x]) => {
+                const [nY, nX] = [y, x + i]
+                newP.push([nY, nX])
+            })
+        }
+        // tetronomi[block] = newP
+        store.Publish('currentBlock', { shape: newP,h: h + i  })
+        // store.Publish('currentBlock', { h: h + i })
 
-    const resetColor = (n) => ({ v, i }) => new Promise((res) =>
-    {
-        const newEl = document.getElementById(`${i + 1 > 35 ? 35 : i + 1}-${v}`)
-        newEl.setAttribute('fill', 'grey')//아
+        return newP
+    }
 
+    const initBlockColor = async ({ el, v, i, store }) => new Promise(res => {
 
+        return setTimeout(() => {
+            if (v > 1) {
+                el.setAttribute('fill', 'gray')
+                res({ i, isDropped: false })
+            }
+            if (v <= 1) {
+                const { block } = store.Use('currentBlock')
+                store.Publish('currentBlock', { block: block + 1,cur: tetronomi[block] ,v: 35, h: 6 })
+                // store.Publish('currentBlock', { cur: tetronomi[block] })
+                // store.Publish('currentBlock', { v: 35 })
+                // store.Publish('currentBlock', { h: 6 })
+                setBlockToDrop({ store })
+            }
+        }, 270)
+    })
+
+    const setBlockColor = async (el, v, i, store) => new Promise(res => {
+        return setTimeout(() => {
+            el.setAttribute('fill', 'red')
+            res({ el, v, i, store })
+        }, 100000 / (10 * (35 / (35 - v))))
     })
 
 
-    const bridge = (n) => (param) => resetColor(n)(param)
-
-
-    const drop = (el, i, v) => new Promise((res) => res(altercolor(el, i, v)))
-
-    const go = (i, v) => 
-    {
-        const el = document.getElementById(`${i}-${v}`)
-        if (i === 1) return
-
-        drop(el, i, v).then(bridge(i === 1 ? 0 : 1)) //블럭위 y개수
-
-        return go(i - 1, v)
+    const drop = ({ v, h, y, x, i, store, rotate }) => {
+        const [mY, mX] = [v + y, h + x]
+        const el = document.getElementById(`${mY}-${mX}`)
+        setBlockColor(el, v, i, store).then(initBlockColor)
+        if (v === 1) return true
+        store.Publish('currentBlock', { v: v - 1 })
+        return drop({ v: v - 1, h, y, x, i, store, rotate })
     }
 
-    blocks[1].forEach(([y, x]) => go(35 + y, 6 + x))
+    const nemo = (y, x) => {
+        const el = document.getElementById(`${y}-${x}`)
+        return ({
+            turn: isOn=> isOn ? el.setAttribute('fill', 'red') : 
+            el.setAttribute('fill', 'gray')
+        })
+    }
+
+
+    const setBlockToDrop = ({ store, rotate }) => {
+        let { v, h, block, cur } = store.Use('currentBlock')
+        const blockQue = [tetronomi[0], tetronomi[1]]
+        cur.forEach(b => {
+            drop({ v, h, y: b[0], x: b[1], i: block, store, rotate })
+        })
+
+    }
+    const { block } = store.Use('currentBlock')
+    store.Publish('currentBlock', { shape: tetronomi[block] })
+    const clock = (store,time) => new Promise(res=>{
+        let { v, h, block, shape } = store.Use('currentBlock')
+
+        if(time < 1) {
+            store.Publish('currentBlock',{cur:tetronomi[block+1],block:block + 1})
+            clock(store,35)
+            return 
+        }else{
+           
+        return setTimeout(() => {
+            console.log(time)
+            store.Publish( 'currentBlock', {v: time - 1} )
+            if ( h > 8 )
+            {
+                store.Publish('currentBlock', {shape: tetronomi[Math.floor(Math.random())] })
+            }
+            render( store, false)
+            shape.forEach(([y,x])=>{
+                nemo(v+y,h+x).turn(false)
+            })
+            clock(store,time-1)
+
+        }, 100)
+    }
+        
+    } )
+    // TODO : 로직 변경 해야함 28.9.2022
+    
+    const render = async (store, rotate) => {
+        let { v, h, block, shape } = store.Use('currentBlock')
+        // setBlockToDrop({store,rotate })
+        // return render({i:i+1})
+        let {  flag } = store.Use('currentBlock')
+            shape.forEach(([y,x])=>{
+                nemo(v+y,h+x).turn(true)
+            })
+    }
+    render(store, false)
+    clock(store,35)
 
 }
 

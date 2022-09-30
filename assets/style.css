@@ -1,3 +1,6 @@
+body {
+    background-color: black;
+}
 main{
     border: 1px solid;
 }
@@ -32,4 +35,8 @@ span{
     width: 80vw;
     letter-spacing: 1.5vw;
 
+}
+svg{
+    position: absolute;
+    top: -70;
 }
